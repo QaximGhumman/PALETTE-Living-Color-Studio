@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PALETTE · Living Color Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,200;14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        /* ─── Reset & Base ─── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            background: #0a0b12;
+            font-family: 'Inter', sans-serif;
+            color: #f0edf6;
+            user-select: none;
+        }
+
+        /* ─── Layout ─── */
+        .app {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ─── Sidebar ─── */
+        .sidebar {
+            width: 320px;
+            min-width: 320px;
+            background: rgba(12, 14, 24, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 28px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+            z-index: 2;
+        }
+        .sidebar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .sidebar .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+        .sidebar .logo .mark {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #a78bfa, #ffcf6b, #6bc9ff, #a78bfa);
+            animation: spin-mark 10s linear infinite;
+        }
+        @keyframes spin-mark {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .sidebar .subtitle {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.25);
+            font-weight: 400;
+            letter-spacing: 0.04em;
+            margin-top: -8px;
+        }
+
+        /* ─── Sections ─── */
+        .section-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.15);
+            margin-top: 4px;
+        }
+
+        /* ─── Upload ─── */
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            background: rgba(255, 255, 255, 0.01);
+        }
+        .upload-area:hover {
+            border-color: rgba(167, 139, 250, 0.2);
+            background: rgba(167, 139, 250, 0.04);
+        }
+        .upload-area.dragover {
+            border-color: rgba(167, 139, 250, 0.4);
+            background: rgba(167, 139, 250, 0.08);
+        }
+        .upload-area .icon {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+        .upload-area p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 300;
+        }
+        .upload-area .hint {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.15);
+            margin-top: 4px;
+        }
+        #fileInput {
+            display: none;
+        }
+
+        /* ─── Mood Input ─── */
+        .mood-input {
+            display: flex;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .mood-input input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 10px 14px;
+            color: #f0edf6;
+            font-size: 14px;
+            font-weight: 400;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+        .mood-input input::placeholder {
+            color: rgba(255, 255, 255, 0.15);
+        }
+        .mood-input button {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(167, 139, 250, 0.15);
+            color: #a78bfa;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .mood-input button:hover {
+            background: rgba(167, 139, 250, 0.25);
+        }
+
+        /* ─── Time Palette ─── */
+        .time-display {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .time-display .time-icon {
+            font-size: 20px;
+        }
+        .time-display .time-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .time-display .time-period {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.2);
+            margin-left: auto;
+            font-weight: 300;
+        }
+
+        /* ─── Shuffle ─── */
+        .shuffle-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(167, 139, 250, 0.08);
+            border-radius: 12px;
+            color: #a78bfa;
+            font-weight: 600;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+        .shuffle-btn:hover {
+            background: rgba(167, 139, 250, 0.16);
+        }
+
+        /* ─── Size Control ─── */
+        .size-control {
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .size-control input[type="range"] {
+            width: 100%;
+            accent-color: #a78bfa;
+            cursor: pointer;
+        }
+        .size-control .size-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.25);
+            margin-top: 6px;
+        }
+        .size-control .size-labels #sizeValue {
+            color: rgba(167, 139, 250, 0.8);
+            font-weight: 600;
+        }
+
+        /* ─── Export ─── */
+        .export-row {
+            display: flex;
+            gap: 8px;
+        }
+        .export-btn {
+            flex: 1;
+            padding: 10px 8px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .export-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        /* ─── Saved Palettes ─── */
+        .saved-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+        .saved-list::-webkit-scrollbar {
+            width: 2px;
+        }
+        .saved-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .saved-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .saved-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+        .saved-item .swatches {
+            display: flex;
+            gap: 4px;
+            flex: 1;
+        }
+        .saved-item .swatch {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .saved-item .name {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 400;
+            max-width: 70px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .saved-item .delete {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            font-size: 14px;
+            transition: color 0.3s ease;
+            padding: 2px 4px;
+        }
+        .saved-item .delete:hover {
+            color: rgba(255, 100, 100, 0.4);
+        }
+
+        .empty-saved {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.1);
+            text-align: center;
+            padding: 12px 0;
+            font-weight: 300;
+        }
+
+        /* ─── Main Area ─── */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0a0b12;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ─── Palette Display ─── */
+        .palette-display {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0;
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .palette-display .color-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            min-height: 200px;
+        }
+        .palette-display .color-card:hover {
+            transform: scale(1.04);
+            z-index: 1;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        .palette-display .color-card .hex {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            pointer-events: none;
+            transition: all 0.4s ease;
+        }
+        .palette-display .color-card .ratio {
+            font-size: 11px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.3);
+            margin-top: 4px;
+            pointer-events: none;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2px 10px;
+            border-radius: 4px;
+        }
+        .palette-display .color-card .contrast-badge {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-top: 6px;
+            pointer-events: none;
+        }
+        .palette-display .color-card .copy-feedback {
+            position: absolute;
+            bottom: 20px;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 4px 12px;
+            border-radius: 6px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+        .palette-display .color-card .copy-feedback.show {
+            opacity: 1;
+        }
+        .palette-display .color-card .lock-toggle {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .palette-display .color-card .lock-toggle:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .palette-display .color-card .lock-toggle.locked {
+            background: rgba(167, 139, 250, 0.4);
+            border-color: rgba(167, 139, 250, 0.6);
+        }
+
+        /* ─── Preview ─── */
+        .preview-section {
+            height: 140px;
+            min-height: 140px;
+            background: #0a0b12;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 0 40px;
+            overflow: hidden;
+            transition: all 0.6s ease;
+        }
+        .preview-section .preview-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.08);
+            writing-mode: vertical-lr;
+            rotate: 180deg;
+        }
+        .preview-section .preview-items {
+            display: flex;
+            gap: 24px;
+            flex: 1;
+            align-items: center;
+            justify-content: center;
+        }
+        .preview-item {
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .preview-item.button {
+            padding: 10px 28px;
+            border-radius: 100px;
+            border: none;
+            font-weight: 600;
+            cursor: default;
+        }
+        .preview-item.card {
+            padding: 16px 24px;
+            border-radius: 16px;
+            min-width: 120px;
+        }
+        .preview-item.card .title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .preview-item.card .sub {
+            font-size: 11px;
+            opacity: 0.5;
+            margin-top: 2px;
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 260px;
+                min-width: 260px;
+                padding: 20px 16px;
+            }
+            .palette-display .color-card .hex {
+                font-size: 14px;
+                padding: 4px 10px;
+            }
+            .preview-section {
+                padding: 0 20px;
+                gap: 12px;
+                height: 120px;
+                min-height: 120px;
+            }
+            .preview-section .preview-items {
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+            .preview-item {
+                font-size: 11px;
+                padding: 8px 14px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                min-width: unset;
+                max-height: 50vh;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+                padding: 16px;
+                gap: 12px;
+            }
+            .sidebar .logo {
+                font-size: 17px;
+            }
+            .sidebar .logo .mark {
+                width: 22px;
+                height: 22px;
+            }
+            .upload-area {
+                padding: 14px;
+            }
+            .upload-area .icon {
+                font-size: 20px;
+            }
+            .saved-list {
+                max-height: 100px;
+            }
+            .main {
+                flex: 1;
+                min-height: 0;
+            }
+            .palette-display {
+                grid-template-columns: repeat(5, 1fr);
+                flex: 1;
+            }
+            .palette-display .color-card {
+                min-height: 100px;
+            }
+            .palette-display .color-card .hex {
+                font-size: 11px;
+                padding: 3px 8px;
+            }
+            .palette-display .color-card .ratio {
+                font-size: 9px;
+            }
+            .palette-display .color-card .lock-toggle {
+                width: 22px;
+                height: 22px;
+                top: 8px;
+                right: 8px;
+                font-size: 11px;
+            }
+            .preview-section {
+                height: 100px;
+                min-height: 100px;
+                padding: 0 12px;
+                gap: 8px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .preview-section .preview-label {
+                display: none;
+            }
+            .preview-item {
+                font-size: 10px;
+                padding: 6px 12px;
+            }
+            .preview-item.card {
+                min-width: 80px;
+                padding: 10px 14px;
+            }
+            .preview-item.card .title {
+                font-size: 12px;
+            }
+            .preview-item.card .sub {
+                font-size: 9px;
+            }
+            .preview-item.button {
+                padding: 6px 16px;
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .palette-display .color-card .hex {
+                font-size: 9px;
+                padding: 2px 6px;
+            }
+            .palette-display .color-card .ratio {
+                font-size: 8px;
+                padding: 1px 6px;
+            }
+            .preview-item {
+                font-size: 9px;
+                padding: 4px 10px;
+            }
+            .preview-item.card {
+                padding: 8px 10px;
+                min-width: 60px;
+            }
+            .preview-item.card .title {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app">
+        <!-- ─── Sidebar ─── -->
+        <div class="sidebar">
+            <div>
+                <div class="logo">
+                    <div class="mark"></div>
+                    <span>PALETTE</span>
+                </div>
+                <div class="subtitle">Living Color Studio</div>
+            </div>
+
+            <!-- Upload -->
+            <div>
+                <div class="section-label">From Photo</div>
+                <div class="upload-area" id="uploadArea">
+                    <div class="icon">🖼️</div>
+                    <p>Drop an image here</p>
+                    <div class="hint">or click to browse</div>
+                    <input type="file" id="fileInput" accept="image/*" />
+                </div>
+            </div>
+
+            <!-- Mood -->
+            <div>
+                <div class="section-label">From Mood</div>
+                <div class="mood-input">
+                    <input type="text" id="moodInput" placeholder="e.g. serenity, passion, autumn" />
+                    <button id="moodBtn">Generate</button>
+                </div>
+            </div>
+
+            <!-- Time -->
+            <div>
+                <div class="section-label">From Time</div>
+                <div class="time-display">
+                    <span class="time-icon" id="timeIcon">🌅</span>
+                    <span class="time-text" id="timeText">Now</span>
+                    <span class="time-period" id="timePeriod">—</span>
+                </div>
+            </div>
+
+            <!-- Random / Shuffle -->
+            <div>
+                <div class="section-label">From Random</div>
+                <button class="shuffle-btn" id="shuffleBtn">🎲 Shuffle Palette</button>
+            </div>
+
+            <!-- Palette Size -->
+            <div>
+                <div class="section-label">Palette Size</div>
+                <div class="size-control">
+                    <input type="range" id="sizeSlider" min="3" max="8" value="5" step="1" />
+                    <div class="size-labels">
+                        <span>3</span>
+                        <span id="sizeValue">5 colors</span>
+                        <span>8</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Saved -->
+            <div style="flex:1;min-height:0;display:flex;flex-direction:column;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                    <div class="section-label">Saved Palettes</div>
+                    <button id="saveBtn" style="background:none;border:none;color:rgba(255,255,255,0.2);font-size:16px;cursor:pointer;transition:color 0.3s;">❤️</button>
+                </div>
+                <div class="saved-list" id="savedList">
+                    <div class="empty-saved">No palettes saved yet</div>
+                </div>
+            </div>
+
+            <!-- Export -->
+            <div>
+                <div class="section-label">Export</div>
+                <div class="export-row">
+                    <button class="export-btn" id="exportCssBtn">Copy CSS</button>
+                    <button class="export-btn" id="exportJsonBtn">Download JSON</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── Main ─── -->
+        <div class="main">
+            <div class="palette-display" id="paletteDisplay">
+                <!-- Generated by JS -->
+            </div>
+
+            <div class="preview-section" id="previewSection">
+                <span class="preview-label">Preview</span>
+                <div class="preview-items" id="previewItems">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  PALETTE · Living Color Studio
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        // ─── State ───
+        let currentPalette = [];       // last rendered palette, display (sorted) order
+        let paletteColors = [];        // last rendered palette, generation order (for locks/export)
+        let savedPalettes = JSON.parse(localStorage.getItem('palette_saved') || '[]');
+        let paletteSize = 5;
+        let lockedIndices = new Set(); // indices (generation order) currently locked
+        let lastGenerator = null;      // () => string[] of length paletteSize
+        let lastImage = null;          // last uploaded <img>, for resizing on size change
+        let lastMood = 'serenity';
+
+        // ─── DOM refs ───
+        const paletteDisplay = document.getElementById('paletteDisplay');
+        const previewItems = document.getElementById('previewItems');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const moodInput = document.getElementById('moodInput');
+        const moodBtn = document.getElementById('moodBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const savedList = document.getElementById('savedList');
+        const timeIcon = document.getElementById('timeIcon');
+        const timeText = document.getElementById('timeText');
+        const timePeriod = document.getElementById('timePeriod');
+        const shuffleBtn = document.getElementById('shuffleBtn');
+        const sizeSlider = document.getElementById('sizeSlider');
+        const sizeValue = document.getElementById('sizeValue');
+        const exportCssBtn = document.getElementById('exportCssBtn');
+        const exportJsonBtn = document.getElementById('exportJsonBtn');
+
+        // ─── Color utilities ───
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(c => {
+                const clamped = Math.max(0, Math.min(255, Math.round(c)));
+                return clamped.toString(16).padStart(2, '0');
+            }).join('');
+        }
+
+        function hexToHSL(hex) {
+            const { r, g, b } = hexToRgb(hex);
+            const max = Math.max(r, g, b),
+                min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2 / 255;
+            const d = max - min;
+            if (d === 0) { h = 0;
+                s = 0; } else {
+                s = d / (255 - Math.abs(2 * l * 255 - max - min));
+                const rr = ((max - r) / d) % 6;
+                const gg = ((max - g) / d);
+                const bb = ((max - b) / d);
+                h = rr < 0 ? 6 + rr : rr;
+                if (gg < 0) h = 0;
+                if (bb < 0) h = 0;
+                if (r === max) h = bb - gg;
+                else if (g === max) h = 2 + rr - bb;
+                else h = 4 + gg - rr;
+                h = ((h / 6) % 1 + 1) % 1;
+            }
+            return { h: h * 360, s: s * 100, l: l * 100 };
+        }
+
+        function hslToHex(h, s, l) {
+            h = h / 360;
+            s = s / 100;
+            l = l / 100;
+            let r, g, b;
+            if (s === 0) {
+                r = g = b = l;
+            } else {
+                const hue2rgb = (p, q, t) => {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1 / 6) return p + (q - p) * 6 * t;
+                    if (t < 1 / 2) return q;
+                    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                    return p;
+                };
+                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                const p = 2 * l - q;
+                r = hue2rgb(p, q, h + 1 / 3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1 / 3);
+            }
+            return rgbToHex(r * 255, g * 255, b * 255);
+        }
+
+        function harmonize(hex, count = 5) {
+            const hsl = hexToHSL(hex);
+            const colors = [];
+            const steps = 360 / count;
+            for (let i = 0; i < count; i++) {
+                const h = (hsl.h + i * steps + 30) % 360;
+                const s = hsl.s + (i % 2 === 0 ? 5 : -5);
+                const l = hsl.l + (i - (count - 1) / 2) * 6;
+                colors.push(hslToHex(h, Math.max(0, Math.min(100, s)), Math.max(10, Math.min(90, l))));
+            }
+            return colors;
+        }
+
+        function adjustToSize(colors, size) {
+            if (colors.length === size) return colors.slice();
+            if (colors.length > size) return colors.slice(0, size);
+            const extra = harmonize(colors[colors.length - 1] || colors[0] || '#a78bfa', size - colors.length);
+            return colors.concat(extra);
+        }
+
+        // ─── WCAG contrast ───
+        function relativeLuminance(hex) {
+            const { r, g, b } = hexToRgb(hex);
+            const [rs, gs, bs] = [r, g, b].map(c => {
+                c /= 255;
+                return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+            });
+            return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+        }
+
+        function contrastRatio(hex1, hex2) {
+            const l1 = relativeLuminance(hex1) + 0.05;
+            const l2 = relativeLuminance(hex2) + 0.05;
+            return l1 > l2 ? l1 / l2 : l2 / l1;
+        }
+
+        function contrastBadge(ratio) {
+            if (ratio >= 7) return { label: 'AAA', bg: 'rgba(120,220,150,0.2)', color: '#7fe0a0' };
+            if (ratio >= 4.5) return { label: 'AA', bg: 'rgba(160,200,255,0.2)', color: '#9ecbff' };
+            if (ratio >= 3) return { label: 'AA LARGE', bg: 'rgba(255,200,100,0.2)', color: '#ffcf6b' };
+            return { label: 'LOW CONTRAST', bg: 'rgba(255,120,120,0.2)', color: '#ff8a8a' };
+        }
+
+        // ─── Extract colors from image ───
+        function extractColorsFromImage(img, size = 5) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const s = 200;
+            canvas.width = s;
+            canvas.height = s;
+            ctx.drawImage(img, 0, 0, s, s);
+            const imageData = ctx.getImageData(0, 0, s, s);
+            const data = imageData.data;
+            const colorMap = {};
+
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i],
+                    g = data[i + 1],
+                    b = data[i + 2];
+                const key = `${Math.round(r/8)*8},${Math.round(g/8)*8},${Math.round(b/8)*8}`;
+                if (!colorMap[key]) colorMap[key] = { r, g, b, count: 0 };
+                colorMap[key].count++;
+            }
+
+            const sorted = Object.values(colorMap)
+                .sort((a, b) => b.count - a.count)
+                .slice(0, Math.max(size, 8));
+
+            const dominant = sorted.slice(0, size);
+            if (dominant.length === 0) return adjustToSize(['#a78bfa', '#ffcf6b', '#6bc9ff', '#ff8a65', '#8affc1'], size);
+
+            let colors = dominant.map(c => rgbToHex(c.r, c.g, c.b));
+            return adjustToSize(colors, size);
+        }
+
+        // ─── Mood-based palette ───
+        function moodToPalette(mood, size = 5) {
+            const moodMap = {
+                'serenity': ['#a8d5e2', '#7fb7c9', '#5a8fa3', '#3d6b7a', '#2a4a55'],
+                'passion': ['#ff6b6b', '#ff8a5c', '#ffb347', '#ff6b35', '#c0392b'],
+                'autumn': ['#d4a373', '#cc8e5a', '#b46f4a', '#8d5a3a', '#5d3a1a'],
+                'ocean': ['#0077be', '#005b96', '#003d66', '#002b4d', '#001a33'],
+                'forest': ['#2d6a4f', '#40916c', '#52b788', '#74c69d', '#95d5b2'],
+                'sunset': ['#ff6b35', '#f7931e', '#ffb347', '#ffd93d', '#f9a825'],
+                'midnight': ['#1a1a2e', '#16213e', '#0f3460', '#533483', '#e94560'],
+                'spring': ['#f8b4c8', '#f5a0b8', '#f2d5c4', '#a8d5ba', '#7bc6a4'],
+                'winter': ['#e8f0f8', '#c8d8e8', '#a8c0d8', '#8aa8c8', '#6a88b0'],
+                'desert': ['#e8c9a0', '#d4a86a', '#c4903a', '#a87830', '#8a6020'],
+                'lavender': ['#e8d5f5', '#d4b8e8', '#c09ad4', '#a87ac4', '#8a5ab0'],
+                'sunshine': ['#ffd93d', '#f9c74f', '#f5b342', '#f09b3a', '#e8842a'],
+            };
+
+            const lower = mood.toLowerCase().trim();
+            for (const [key, colors] of Object.entries(moodMap)) {
+                if (lower.includes(key) || key.includes(lower) || lower.split(' ').some(w => key.includes(w))) {
+                    return adjustToSize(colors, size);
+                }
+            }
+
+            const seed = lower.length + (lower.charCodeAt(0) || 0);
+            const colors = [];
+            for (let i = 0; i < size; i++) {
+                const h = (seed * 47 + i * 72 + 180) % 360;
+                const s = 50 + (i * 7) % 30;
+                const l = 40 + (i * 12) % 35;
+                colors.push(hslToHex(h, s, l));
+            }
+            return colors;
+        }
+
+        // ─── Time-based palette ───
+        function timeToPalette(size = 5) {
+            const now = new Date();
+            const h = now.getHours();
+            const m = now.getMinutes();
+
+            let colors;
+            if (h >= 5 && h < 8) {
+                colors = ['#ff6b35', '#f7931e', '#ffb347', '#ffd93d', '#f9a825'];
+                timeIcon.textContent = '🌅';
+                timeText.textContent = 'Sunrise';
+            } else if (h >= 8 && h < 12) {
+                colors = ['#a8d5e2', '#7fb7c9', '#5a8fa3', '#3d6b7a', '#2a4a55'];
+                timeIcon.textContent = '☀️';
+                timeText.textContent = 'Morning';
+            } else if (h >= 12 && h < 17) {
+                colors = ['#6bc9ff', '#4a9fd8', '#2a7ab0', '#1a5a8a', '#0a3a60'];
+                timeIcon.textContent = '🌤️';
+                timeText.textContent = 'Afternoon';
+            } else if (h >= 17 && h < 20) {
+                colors = ['#ff6b35', '#f7931e', '#ffb347', '#ff6b6b', '#c0392b'];
+                timeIcon.textContent = '🌅';
+                timeText.textContent = 'Sunset';
+            } else if (h >= 20 && h < 23) {
+                colors = ['#2d1b4e', '#4a2a6a', '#6a3a8a', '#8a4aaa', '#aa5aca'];
+                timeIcon.textContent = '🌙';
+                timeText.textContent = 'Evening';
+            } else {
+                colors = ['#1a1a2e', '#16213e', '#0f3460', '#533483', '#e94560'];
+                timeIcon.textContent = '🌌';
+                timeText.textContent = 'Night';
+            }
+            timePeriod.textContent = `${h}:${String(m).padStart(2,'0')}`;
+
+            return adjustToSize(colors, size);
+        }
+
+        // ─── Random palette (harmony-based) ───
+        function randomPalette(size = 5) {
+            const baseHue = Math.random() * 360;
+            const harmonies = ['analogous', 'complementary', 'triadic', 'split-complementary', 'monochrome'];
+            const type = harmonies[Math.floor(Math.random() * harmonies.length)];
+            const hues = [];
+
+            for (let i = 0; i < size; i++) {
+                switch (type) {
+                    case 'analogous':
+                        hues.push((baseHue + i * 25 - (size - 1) * 12.5 + 360) % 360);
+                        break;
+                    case 'complementary':
+                        hues.push(i % 2 === 0 ? baseHue : (baseHue + 180) % 360);
+                        break;
+                    case 'triadic':
+                        hues.push((baseHue + (i % 3) * 120) % 360);
+                        break;
+                    case 'split-complementary': {
+                        const opts = [baseHue, (baseHue + 150) % 360, (baseHue + 210) % 360];
+                        hues.push(opts[i % 3]);
+                        break;
+                    }
+                    default:
+                        hues.push(baseHue);
+                }
+            }
+
+            return hues.map((h, i) => {
+                const s = 45 + Math.random() * 35;
+                const l = 18 + (i / Math.max(size - 1, 1)) * 62;
+                return hslToHex(h, s, l);
+            });
+        }
+
+        // ─── Generation + lock merge ───
+        function applyLocksAndRender(newColors) {
+            const merged = newColors.map((c, i) =>
+                (lockedIndices.has(i) && paletteColors[i]) ? paletteColors[i] : c
+            );
+            renderPalette(merged);
+        }
+
+        // ─── Render palette ───
+        function renderPalette(colors) {
+            paletteColors = colors.slice(); // generation order, used for locks + export
+
+            const palette = colors.map((c, i) => {
+                const hsl = hexToHSL(c);
+                return {
+                    hex: c,
+                    originalIndex: i,
+                    ratio: Math.round((1 / colors.length) * 100) + '%',
+                    lightness: hsl.l
+                };
+            });
+
+            palette.sort((a, b) => a.lightness - b.lightness);
+            currentPalette = palette;
+
+            paletteDisplay.style.gridTemplateColumns = `repeat(${colors.length}, 1fr)`;
+            paletteDisplay.innerHTML = '';
+
+            palette.forEach((color) => {
+                const textColor = color.lightness > 60 ? '#1a1a2e' : '#f0edf6';
+                const card = document.createElement('div');
+                card.className = 'color-card';
+                card.style.background = color.hex;
+                card.style.color = textColor;
+
+                const hexSpan = document.createElement('span');
+                hexSpan.className = 'hex';
+                hexSpan.textContent = color.hex.toUpperCase();
+
+                const ratioSpan = document.createElement('span');
+                ratioSpan.className = 'ratio';
+                ratioSpan.textContent = color.ratio;
+
+                const ratio = contrastRatio(color.hex, textColor);
+                const badgeInfo = contrastBadge(ratio);
+                const badge = document.createElement('span');
+                badge.className = 'contrast-badge';
+                badge.textContent = `${badgeInfo.label} · ${ratio.toFixed(1)}:1`;
+                badge.style.background = badgeInfo.bg;
+                badge.style.color = badgeInfo.color;
+
+                const feedback = document.createElement('span');
+                feedback.className = 'copy-feedback';
+                feedback.textContent = 'Copied!';
+
+                const lockToggle = document.createElement('div');
+                lockToggle.className = 'lock-toggle' + (lockedIndices.has(color.originalIndex) ? ' locked' : '');
+                lockToggle.textContent = lockedIndices.has(color.originalIndex) ? '🔒' : '🔓';
+                lockToggle.title = 'Lock this color when regenerating';
+                lockToggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (lockedIndices.has(color.originalIndex)) {
+                        lockedIndices.delete(color.originalIndex);
+                        lockToggle.classList.remove('locked');
+                        lockToggle.textContent = '🔓';
+                    } else {
+                        lockedIndices.add(color.originalIndex);
+                        lockToggle.classList.add('locked');
+                        lockToggle.textContent = '🔒';
+                    }
+                });
+
+                card.appendChild(hexSpan);
+                card.appendChild(ratioSpan);
+                card.appendChild(badge);
+                card.appendChild(feedback);
+                card.appendChild(lockToggle);
+
+                card.addEventListener('click', () => {
+                    navigator.clipboard.writeText(color.hex).then(() => {
+                        feedback.classList.add('show');
+                        setTimeout(() => feedback.classList.remove('show'), 800);
+                    });
+                });
+
+                paletteDisplay.appendChild(card);
+            });
+
+            renderPreview(palette);
+        }
+
+        // ─── Render preview ───
+        function renderPreview(palette) {
+            const colors = palette.map(p => p.hex);
+            previewItems.innerHTML = '';
+
+            const bgCard = document.createElement('div');
+            bgCard.className = 'preview-item card';
+            bgCard.style.background = colors[0];
+            bgCard.style.color = hexToHSL(colors[0]).l > 60 ? '#1a1a2e' : '#f0edf6';
+            bgCard.innerHTML = `<div class="title">Card</div><div class="sub">Background</div>`;
+            previewItems.appendChild(bgCard);
+
+            const textCard = document.createElement('div');
+            textCard.className = 'preview-item card';
+            const textColorIdx = Math.min(1, colors.length - 1);
+            textCard.style.background = colors[textColorIdx];
+            textCard.style.color = hexToHSL(colors[textColorIdx]).l > 60 ? '#1a1a2e' : '#f0edf6';
+            textCard.innerHTML = `<div class="title">Text</div><div class="sub">Content</div>`;
+            previewItems.appendChild(textCard);
+
+            const accentIdx = Math.min(2, colors.length - 1);
+            const accentCard = document.createElement('div');
+            accentCard.className = 'preview-item card';
+            accentCard.style.background = colors[accentIdx];
+            accentCard.style.color = hexToHSL(colors[accentIdx]).l > 60 ? '#1a1a2e' : '#f0edf6';
+            accentCard.innerHTML = `<div class="title">Accent</div><div class="sub">Highlight</div>`;
+            previewItems.appendChild(accentCard);
+
+            const btnIdx = Math.min(3, colors.length - 1);
+            const btn = document.createElement('div');
+            btn.className = 'preview-item button';
+            btn.style.background = colors[btnIdx];
+            btn.style.color = hexToHSL(colors[btnIdx]).l > 60 ? '#1a1a2e' : '#f0edf6';
+            btn.textContent = 'Button';
+            previewItems.appendChild(btn);
+
+            const outlineIdx = Math.min(4, colors.length - 1);
+            const btn2 = document.createElement('div');
+            btn2.className = 'preview-item button';
+            btn2.style.background = 'transparent';
+            btn2.style.color = colors[outlineIdx];
+            btn2.style.border = `2px solid ${colors[outlineIdx]}`;
+            btn2.textContent = 'Outline';
+            previewItems.appendChild(btn2);
+        }
+
+        // ─── Render saved ───
+        function renderSaved() {
+            savedList.innerHTML = '';
+            if (savedPalettes.length === 0) {
+                savedList.innerHTML = '<div class="empty-saved">No palettes saved yet</div>';
+                return;
+            }
+
+            savedPalettes.slice().reverse().forEach((item, idx) => {
+                const div = document.createElement('div');
+                div.className = 'saved-item';
+
+                const swatches = document.createElement('div');
+                swatches.className = 'swatches';
+                item.colors.slice(0, 5).forEach(c => {
+                    const swatch = document.createElement('div');
+                    swatch.className = 'swatch';
+                    swatch.style.background = c;
+                    swatches.appendChild(swatch);
+                });
+
+                const name = document.createElement('span');
+                name.className = 'name';
+                name.textContent = item.name || `Palette ${savedPalettes.length - idx}`;
+
+                const del = document.createElement('button');
+                del.className = 'delete';
+                del.textContent = '✕';
+                del.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    savedPalettes.splice(savedPalettes.length - 1 - idx, 1);
+                    localStorage.setItem('palette_saved', JSON.stringify(savedPalettes));
+                    renderSaved();
+                });
+
+                div.addEventListener('click', () => {
+                    lockedIndices.clear();
+                    paletteSize = item.colors.length;
+                    sizeSlider.value = paletteSize;
+                    sizeValue.textContent = `${paletteSize} colors`;
+                    lastGenerator = () => item.colors.slice();
+                    renderPalette(item.colors);
+                });
+
+                div.appendChild(swatches);
+                div.appendChild(name);
+                div.appendChild(del);
+                savedList.appendChild(div);
+            });
+        }
+
+        // ─── Save current palette ───
+        function saveCurrentPalette() {
+            if (currentPalette.length === 0) return;
+            const colors = currentPalette.map(c => c.hex);
+            const name = prompt('Name this palette:', `Palette ${savedPalettes.length + 1}`);
+            if (name === null) return;
+            savedPalettes.push({ name: name || `Palette ${savedPalettes.length + 1}`, colors });
+            localStorage.setItem('palette_saved', JSON.stringify(savedPalettes));
+            renderSaved();
+
+            saveBtn.style.color = '#ff6b6b';
+            setTimeout(() => saveBtn.style.color = 'rgba(255,255,255,0.2)', 500);
+        }
+
+        // ─── Export ───
+        function flashExportBtn(btn, originalText) {
+            const prev = btn.textContent;
+            btn.textContent = originalText;
+            btn.style.color = '#a78bfa';
+            setTimeout(() => {
+                btn.textContent = prev;
+                btn.style.color = '';
+            }, 1200);
+        }
+
+        function exportAsCss() {
+            if (currentPalette.length === 0) return;
+            const lines = currentPalette.map((c, i) => `  --color-${i + 1}: ${c.hex};`);
+            const css = `:root {\n${lines.join('\n')}\n}`;
+            navigator.clipboard.writeText(css).then(() => {
+                flashExportBtn(exportCssBtn, '✓ Copied!');
+            });
+        }
+
+        function exportAsJson() {
+            if (currentPalette.length === 0) return;
+            const payload = {
+                name: 'PALETTE Export',
+                created: new Date().toISOString(),
+                colors: currentPalette.map(c => c.hex)
+            };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'palette.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            flashExportBtn(exportJsonBtn, '✓ Saved!');
+        }
+
+        // ─── Image upload ───
+        function handleImage(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    lastImage = img;
+                    lockedIndices.clear();
+                    lastGenerator = () => extractColorsFromImage(lastImage, paletteSize);
+                    applyLocksAndRender(lastGenerator());
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleImage(file);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleImage(e.target.files[0]);
+            }
+        });
+
+        // ─── Mood ───
+        function generateFromMood() {
+            const mood = moodInput.value.trim();
+            if (!mood) return;
+            lastMood = mood;
+            lastGenerator = () => moodToPalette(lastMood, paletteSize);
+            applyLocksAndRender(lastGenerator());
+        }
+
+        moodBtn.addEventListener('click', generateFromMood);
+        moodInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') generateFromMood();
+        });
+
+        // ─── Time ───
+        function updateTimePalette() {
+            lastGenerator = () => timeToPalette(paletteSize);
+            applyLocksAndRender(lastGenerator());
+        }
+
+        // ─── Shuffle ───
+        function shuffle() {
+            lastGenerator = () => randomPalette(paletteSize);
+            applyLocksAndRender(lastGenerator());
+        }
+        shuffleBtn.addEventListener('click', shuffle);
+
+        // ─── Palette size ───
+        sizeSlider.addEventListener('input', () => {
+            paletteSize = parseInt(sizeSlider.value, 10);
+            sizeValue.textContent = `${paletteSize} colors`;
+        });
+        sizeSlider.addEventListener('change', () => {
+            lockedIndices.clear();
+            if (lastGenerator) {
+                renderPalette(lastGenerator());
+            }
+        });
+
+        // ─── Save ───
+        saveBtn.addEventListener('click', saveCurrentPalette);
+
+        // ─── Export buttons ───
+        exportCssBtn.addEventListener('click', exportAsCss);
+        exportJsonBtn.addEventListener('click', exportAsJson);
+
+        // ─── Keyboard shortcuts ───
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                saveCurrentPalette();
+            }
+            if (e.key === 't' || e.key === 'T') {
+                updateTimePalette();
+            }
+            if (e.key === 'r' || e.key === 'R') {
+                shuffle();
+            }
+        });
+
+        // ─── Init ───
+        renderSaved();
+        updateTimePalette();
+
+        // Update time palette every minute
+        setInterval(updateTimePalette, 60000);
+
+        console.log('✦ PALETTE · Living Color Studio');
+        console.log('📷 Upload an image to extract colors');
+        console.log('💭 Type a mood for a color palette');
+        console.log('🕐 Time-based palette updates every minute');
+        console.log('🎲 Press R to shuffle a random palette');
+        console.log('🔒 Click the lock icon on a swatch to keep it during regeneration');
+        console.log('💾 Press Cmd/Ctrl + S to save current palette');
+        console.log('⌨️  Press T for time-based palette');
+    </script>
+</body>
+</html>
